@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class QuotesTest < ApplicationSystemTestCase
   setup do
-    @quote = quote(:first)
+    @quote = quotes(:first)
   end
 
   test "Showing a quote" do
