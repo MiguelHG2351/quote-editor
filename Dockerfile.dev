@@ -58,6 +58,14 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libvips postgresql-client postgresql unzip wget && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+RUN wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip && \
+    mkdir /usr/local/bin/google-chrome && \
+    mv chromedriver /usr/local/bin/google-chrome && \
+    chmod +x /usr/local/bin/google-chrome/chromedriver
+RUN chown -R root:$(whoami) /usr/local/bin/google-chrome/
+RUN chmod -R 777 /usr/local/bin/google-chrome/
+
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /quote_editor /quote_editor
@@ -65,12 +73,6 @@ COPY --from=build /usr/local/node /usr/local/node
 
 # Add Node.js bin directory to PATH
 ENV PATH=/usr/local/node/bin:$PATH
-
-# install chromedriver
-RUN wget https://chromedriver.storage.googleapis.com/92.0.4515.107/chromedriver_linux64.zip && \
-    unzip chromedriver_linux64.zip -d /usr/local/bin/chromedriver && \
-    chmod +x /usr/local/bin/chromedriver && \
-    rm chromedriver_linux64.zip
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
